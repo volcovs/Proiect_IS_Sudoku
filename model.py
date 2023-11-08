@@ -11,11 +11,11 @@ class Model():
         )
 
 
-    def databaseToMatrix(self, table_name):
+    def newGame(self):
         m = []
 
         cursor = self.db.cursor()
-        cursor.execute('SELECT * FROM ' + table_name +' LIMIT 1')
+        cursor.execute('SELECT * FROM game LIMIT 1')
 
         # lista de tuple (id, difficulty, row1, row2 .. row9)
         all_data = cursor.fetchall()
@@ -26,6 +26,21 @@ class Model():
 
         return m
 
+
+    def newGameSolution(self):
+        m = []
+
+        cursor = self.db.cursor()
+        cursor.execute('SELECT * FROM solution LIMIT 1')
+
+        # lista de tuple (id, difficulty, row1, row2 .. row9)
+        all_data = cursor.fetchall()
+
+        for e in all_data:
+            for i in range(3, 12):
+                m.append([int(c) for c in e[i]])
+
+        return m
 
     def checkCorrect(self, m, solution, num, i, j):
         # functia primeste matricea de joc, cifra noua si pozitia pe care a fost adaugata cifra
@@ -40,9 +55,9 @@ class Model():
         flagColumn = len([e[j] for e in m if e[j] == num]) == 0
 
         # verificare patrat 3x3
-        squareRow1 = m[i/3][:3]
-        squareRow2 = m[i/3+1][0:3]
-        squareRow3 = m[i/3+2][:3]
+        squareRow1 = m[i//3][:3]
+        squareRow2 = m[i//3+1][0:3]
+        squareRow3 = m[i//3+2][:3]
 
         flagSquare = not (num in squareRow1 or num in squareRow2 or num in squareRow3)
 
@@ -55,6 +70,17 @@ class Model():
     def addNumber(self, m, solution, num, i, j):
         if self.checkCorrect(m, solution, num, i, j):
             m[i][j] = num
+
+            #constructor for the updated row on the sudoku board
+            row = ""
+            for e in m[i]:
+                row = row + str(e)
+
+            #update database
+            cursor = self.db.cursor()
+            cursor.execute('UPDATE game SET row' + str(i+1) + ' = "' + row + '" WHERE id = 1')
+            self.db.commit()
+
             for r in m:
                 if len([e for e in r if e == 0]) == 0:
                     print("You won")
@@ -62,3 +88,9 @@ class Model():
             print("Incorrect number")
             # maybe show the number with red on the website
             # perhaps return different int values for each error
+
+
+    def abortGame(self):
+        cursor = self.db.cursor()
+        cursor.execute('DELETE * FROM solution')
+        cursor.execute('DELETE * FROM game')
