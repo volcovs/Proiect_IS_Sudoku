@@ -94,3 +94,4 @@ class Model():
         cursor = self.db.cursor()
         cursor.execute('DELETE * FROM solution')
         cursor.execute('DELETE * FROM game')
+        self.db.commit()
