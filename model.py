@@ -76,9 +76,19 @@ class Model():
             for e in m[i]:
                 row = row + str(e)
 
+            #get the id of the game to be updated
+            cursor = self.db.cursor()
+            cursor.execute('SELECT * FROM solution LIMIT 1')
+
+            # lista de tuple (id, difficulty, row1, row2 .. row9)
+            all_data = cursor.fetchall()
+
+            for e in all_data:
+                id = e[0]
+
             #update database
             cursor = self.db.cursor()
-            cursor.execute('UPDATE game SET row' + str(i+1) + ' = "' + row + '" WHERE id = 1')
+            cursor.execute('UPDATE game SET row' + str(i+1) + ' = "' + row + '" WHERE id = ' + str(id))
             self.db.commit()
 
             for r in m:
@@ -92,6 +102,6 @@ class Model():
 
     def abortGame(self):
         cursor = self.db.cursor()
-        cursor.execute('DELETE * FROM solution')
-        cursor.execute('DELETE * FROM game')
+        cursor.execute('DELETE * FROM solution LIMIT 1')
+        cursor.execute('DELETE * FROM game LIMIT 1')
         self.db.commit()
