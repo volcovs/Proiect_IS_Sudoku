@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders'
+    "corsheaders"
 ]
 
 MIDDLEWARE = [
@@ -55,7 +55,22 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny']}
 
-CORS_ORIGIN_ALLOW_ALL = True
+
+CSRF_ALLOWED_ORIGINS = ['http://localhost:3000']
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
 
 ROOT_URLCONF = 'IS_final.urls'
 

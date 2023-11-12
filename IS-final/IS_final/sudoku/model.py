@@ -22,7 +22,7 @@ class Model_Sudoku():
 
         for e in all_data:
             for i in range(2, 11):
-                m.append([int(c) for c in e[i]])
+                m.append(e[i])
 
         return m
 
@@ -38,9 +38,21 @@ class Model_Sudoku():
 
         for e in all_data:
             for i in range(3, 12):
-                m.append([int(c) for c in e[i]])
+                m.append(e[i])
 
         return m
+
+
+    def checkCorrectIneff(self, m, solution):
+        matrix1 = [e.split(",") for e in m]
+        matrix2 = [e.split(",") for e in solution]
+
+        for i in range(len(matrix1)):
+            for j in range(len(matrix1[0])):
+                if matrix1[i][j] != '0' and matrix1[i][j] != matrix2[i][j]:
+                    return False, i, j
+
+        return True, 0, 0
 
     def checkCorrect(self, m, solution, num, i, j):
         # functia primeste matricea de joc, cifra noua si pozitia pe care a fost adaugata cifra

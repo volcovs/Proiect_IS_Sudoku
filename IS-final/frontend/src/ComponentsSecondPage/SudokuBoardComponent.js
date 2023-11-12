@@ -2,9 +2,10 @@
 import React, { Component } from "react";
 import SudokuCell from "./SudokuCellComponent";
 import axios from "axios";
+const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0];
 
 class SudokuBoard extends Component {
-    state = {details: [], board: [], }
+    state = {details: [], }
 
     constructor(props) {
         super(props);
@@ -15,37 +16,37 @@ class SudokuBoard extends Component {
             .then(res => {
                 data_game = res.data;
 
-                    this.setState({
-                        details: data_game,
-                        board: []
-                    });
+                this.setState({
+                    details: data_game,
                 })
+
+                console.log(data_game)
+            })
             .catch(err => {
                 "Error mounting data"
             })
 
 
-                //this.state.board = [
-                //[5, 3, "", "", 7, "", "", "", ""]
-                //[6, "", "", 1, 9, 5, "", "", ""],
-                //["", 9, 8, "", "", "", "", 6, ""],
-                //[8, "", "", "", 6, "", "", "", 3],
-                //[4, "", "", 8, "", 3, "", "", 1],
-                //[7, "", "", "", 2, "", "", "", 6],
-                //["", 6, "", "", "", "", 2, 8, ""],
-                //["", "", "", 4, 1, 9, "", "", 5],
-                //["", "", "", "", 8, "", "", 7, 9],
-            //]
-        //};
-
-
     }
 
     handleCellChange = (row, col, value) => {
-        const newBoard = [...this.state.board];
-        newBoard[row][col] = value;
-        this.setState({ board: newBoard });
+        const updatedDetails = [...this.state.details];
+
+        updatedDetails[0][`row${row}`] = updatedDetails[0][`row${row}`]
+            .split(',')
+            .map((cell, index) => (index === col ? value : cell))
+            .join(',');
+
+        axios.post('http://localhost:8000', updatedDetails[0])
+            .then(r => console.log(r))
+            .catch(err => console.log(err))
+
+        this.setState({
+            details: updatedDetails,
+        });
+
     };
+
 
     render() {
         return (

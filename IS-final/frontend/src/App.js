@@ -15,7 +15,7 @@ class App extends React.Component {
         return (
             <div className="App">
                 <header className="App-header">
-                    <h1>PENTRU LUMI</h1>
+                    <h1>SUDOKU</h1>
                     <ButtonsMenu/>
                     <SudokuBoard></SudokuBoard>
                 </header>
