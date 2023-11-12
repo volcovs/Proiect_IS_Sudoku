@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from . models import *
 from rest_framework.response import Response
 from . serializer import *
+from . import model
 
 
 class ReactView(APIView):
@@ -16,7 +17,17 @@ class ReactView(APIView):
         return Response(output)
 
     def post(self, request):
-        serializer = ReactSerializer(data=request.data)
+        React.objects.all().delete();
+
+        m = model.Model_Sudoku('localhost', 'root', 'TheHateUGive13$', 'sudoku')
+        board = m.newGame()
+        dict = {'row1': board[0], 'row2': board[1], 'row3': board[2], 'row4': board[3],
+                'row5': board[4], 'row6': board[5], 'row7': board[6], 'row8': board[7],
+                'row9': board[8]}
+
+        serializer = ReactSerializer(data=dict)
+
+        # serializer = ReactSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
