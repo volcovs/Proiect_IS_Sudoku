@@ -2,17 +2,20 @@
 import React, { Component } from "react";
 import SudokuCell from "./SudokuCellComponent";
 import axios from "axios";
-const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0];
+import "../StylingFolder/SudokuBoardStyle.css"
 
 class SudokuBoard extends Component {
     state = {details: [], }
+
+    list = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
 
     constructor(props) {
         super(props);
 
         let data_game;
 
-        axios.get('http://localhost:8000')
+        axios.get('http://localhost:8000/board/')
             .then(res => {
                 data_game = res.data;
 
@@ -32,12 +35,12 @@ class SudokuBoard extends Component {
     handleCellChange = (row, col, value) => {
         const updatedDetails = [...this.state.details];
 
-        updatedDetails[0][`row${row}`] = updatedDetails[0][`row${row}`]
+        updatedDetails[0][`col${col+1}`] = updatedDetails[0][`col${row+1}`]
             .split(',')
-            .map((cell, index) => (index === col ? value : cell))
+            .map((cell, index) => (index === row ? value : cell))
             .join(',');
 
-        axios.post('http://localhost:8000', updatedDetails[0])
+        axios.post('http://localhost:8000/board/', updatedDetails[0])
             .then(r => console.log(r))
             .catch(err => console.log(err))
 
@@ -48,119 +51,27 @@ class SudokuBoard extends Component {
     };
 
 
+    renderColumn(col, colIndex) {
+        return (
+            <div key={colIndex} className="sudoku-column">
+                {col.split(",").map((cell, rowIndex) => (
+                    <div className="sudoku-cell">
+                    <SudokuCell
+                        key={rowIndex}
+                        value={cell}
+                        onChange={(value) => this.handleCellChange(rowIndex, colIndex, value)}
+                    />
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
     render() {
         return (
             <div className="sudoku-board">
                 {this.state.details.map((elem, index) => (
-                    <div key={index} className="sudoku-elem">
-                        <div key={1} className={"sudoku-row"}>
-                            {elem.row1.split(",").map((cell, colIndex) =>
-                                <SudokuCell
-                                    key={colIndex}
-                                    value={cell}
-                                    onChange={(value) =>
-                                        this.handleCellChange(1, colIndex, value)
-                                    }
-                                />
-                            )}
-                        </div>
-
-                        <div key={2} className={"sudoku-row"}>
-                            {elem.row2.split(",").map((cell, colIndex) =>
-                                <SudokuCell
-                                    key={colIndex}
-                                    value={cell}
-                                    onChange={(value) =>
-                                        this.handleCellChange(2, colIndex, value)
-                                    }
-                                />
-                            )}
-                        </div>
-
-                        <div key={3} className={"sudoku-row"}>
-                            {elem.row3.split(",").map((cell, colIndex) =>
-                                <SudokuCell
-                                    key={colIndex}
-                                    value={cell}
-                                    onChange={(value) =>
-                                        this.handleCellChange(3, colIndex, value)
-                                    }
-                                />
-                            )}
-                        </div>
-
-                        <div key={4} className={"sudoku-row"}>
-                            {elem.row4.split(",").map((cell, colIndex) =>
-                                    <SudokuCell
-                                        key={colIndex}
-                                        value={cell}
-                                        onChange={(value) =>
-                                            this.handleCellChange(4, colIndex, value)
-                                        }
-                                    />
-                                )}
-                        </div>
-
-                        <div key={5} className={"sudoku-row"}>
-                            {elem.row5.split(",").map((cell, colIndex) =>
-                                    <SudokuCell
-                                        key={colIndex}
-                                        value={cell}
-                                        onChange={(value) =>
-                                            this.handleCellChange(5, colIndex, value)
-                                        }
-                                    />
-                                )}
-                        </div>
-
-                        <div key={6} className={"sudoku-row"}>
-                            {elem.row6.split(",").map((cell, colIndex) =>
-                                    <SudokuCell
-                                        key={colIndex}
-                                        value={cell}
-                                        onChange={(value) =>
-                                            this.handleCellChange(6, colIndex, value)
-                                        }
-                                    />
-                                )}
-                        </div>
-
-                        <div key={7} className={"sudoku-row"}>
-                                {elem.row7.split(",").map((cell, colIndex) =>
-                                        <SudokuCell
-                                            key={colIndex}
-                                            value={cell}
-                                            onChange={(value) =>
-                                                this.handleCellChange(7, colIndex, value)
-                                            }
-                                        />
-                                    )}
-                        </div>
-
-                        <div key={8} className={"sudoku-row"}>
-                                {elem.row8.split(",").map((cell, colIndex) =>
-                                        <SudokuCell
-                                            key={colIndex}
-                                            value={cell}
-                                            onChange={(value) =>
-                                                this.handleCellChange(8, colIndex, value)
-                                            }
-                                        />
-                                    )}
-                        </div>
-
-                        <div key={9} className={"sudoku-row"}>
-                                {elem.row9.split(",").map((cell, colIndex) =>
-                                        <SudokuCell
-                                            key={colIndex}
-                                            value={cell}
-                                            onChange={(value) =>
-                                                this.handleCellChange(9, colIndex, value)
-                                            }
-                                        />
-                                    )}
-                        </div>
-                    </div>
+                    [...Array(9)].map((_, colIndex) => this.renderColumn(elem[`col${colIndex + 1}`], colIndex))
                 ))}
             </div>
         );

@@ -1,13 +1,13 @@
 from django.db import models
 
 class React(models.Model):
-    row1 = models.CharField(max_length=18)
-    row2 = models.CharField(max_length=18)
-    row3 = models.CharField(max_length=18)
-    row4 = models.CharField(max_length=18)
-    row5 = models.CharField(max_length=18)
-    row6 = models.CharField(max_length=18)
-    row7 = models.CharField(max_length=18)
-    row8 = models.CharField(max_length=18)
-    row9 = models.CharField(max_length=18)
+    col1 = models.CharField(max_length=18)
+    col2 = models.CharField(max_length=18)
+    col3 = models.CharField(max_length=18)
+    col4 = models.CharField(max_length=18)
+    col5 = models.CharField(max_length=18)
+    col6 = models.CharField(max_length=18)
+    col7 = models.CharField(max_length=18)
+    col8 = models.CharField(max_length=18)
+    col9 = models.CharField(max_length=18)
 

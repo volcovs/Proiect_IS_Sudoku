@@ -21,5 +21,6 @@ from sudoku.views import ReactView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', ReactView.as_view(), name="sudoku")
+    path('board/', ReactView.as_view(), name="sudoku")
+    # path('messages/', ....as_view(), name="msgs")
 ]

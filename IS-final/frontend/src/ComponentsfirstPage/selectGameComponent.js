@@ -18,8 +18,9 @@ class ButtonsMenu extends Component{
     render(){
        return (
            <div>
-               <GameButton onClick = {this.handleButtonStartGame} text = "start new game"/>
                <GameButton onClick = {this.handleButtonContinueGame} text = "continue  game"/>
+               <GameButton onClick = {this.handleButtonStartGame} text = "start new game"/>
+
                {this.state.showLevelOptions &&
                <LevelsButtons/>}
            </div>

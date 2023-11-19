@@ -12,9 +12,9 @@ class SudokuCell extends Component {
         return (
             <input
                 type="number"
-                min="0"
+                min="1"
                 max="9"
-                value={this.props.value}
+                value={this.props.value === '0' ? "" : this.props.value}
                 onChange={this.handleChange}
             />
         );

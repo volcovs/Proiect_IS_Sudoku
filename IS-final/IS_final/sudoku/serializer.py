@@ -4,4 +4,4 @@ from .models import *
 class ReactSerializer(serializers.ModelSerializer):
     class Meta:
         model = React
-        fields = ['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8', 'row9']
+        fields = ['col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7', 'col8', 'col9']

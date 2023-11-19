@@ -7,6 +7,8 @@ import SudokuBoard from "./ComponentsSecondPage/SudokuBoardComponent";
 
 import axios from 'axios';
 import React from 'react';
+import FirstPage from "./ComponentsfirstPage/FirstPage";
+import SecondPage from "./ComponentsSecondPage/SecondPage";
 
 
 class App extends React.Component {
@@ -14,11 +16,7 @@ class App extends React.Component {
     render() {
         return (
             <div className="App">
-                <header className="App-header">
-                    <h1>SUDOKU</h1>
-                    <ButtonsMenu/>
-                    <SudokuBoard></SudokuBoard>
-                </header>
+                    <SecondPage/>
 
             </div>
         );

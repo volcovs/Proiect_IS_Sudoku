@@ -19,8 +19,8 @@ class ReactView(APIView):
                   # "row6": output.row6, "row7": output.row7, "row8": output.row8, "row9": output.row9}
                # for output in React.objects.all()]
 
-        resp = [{"row1": self.board[0], "row2": self.board[1], "row3": self.board[2], "row4": self.board[3], "row5": self.board[4],
-             "row6": self.board[5], "row7": self.board[6], "row8": self.board[7], "row9": self.board[8]}]
+        resp = [{"col1": self.board[0], "col2": self.board[1], "col3": self.board[2], "col4": self.board[3], "col5": self.board[4],
+             "col6": self.board[5], "col7": self.board[6], "col8": self.board[7], "col9": self.board[8]}]
 
         return Response(resp)
 
@@ -30,15 +30,15 @@ class ReactView(APIView):
         serializer = ReactSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
-            self.board[0] = serializer.validated_data['row1']
-            self.board[1] = serializer.validated_data['row2']
-            self.board[2] = serializer.validated_data['row3']
-            self.board[3] = serializer.validated_data['row4']
-            self.board[4] = serializer.validated_data['row5']
-            self.board[5] = serializer.validated_data['row6']
-            self.board[6] = serializer.validated_data['row7']
-            self.board[7] = serializer.validated_data['row8']
-            self.board[8] = serializer.validated_data['row9']
+            self.board[0] = serializer.validated_data['col1']
+            self.board[1] = serializer.validated_data['col2']
+            self.board[2] = serializer.validated_data['col3']
+            self.board[3] = serializer.validated_data['col4']
+            self.board[4] = serializer.validated_data['col5']
+            self.board[5] = serializer.validated_data['col6']
+            self.board[6] = serializer.validated_data['col7']
+            self.board[7] = serializer.validated_data['col8']
+            self.board[8] = serializer.validated_data['col9']
 
             flag, x, y = self.m.checkCorrectIneff(self.board, self.solutionToGame)
             if not flag:
