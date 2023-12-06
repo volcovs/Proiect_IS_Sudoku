@@ -1,0 +1,34 @@
+.sudoku-board{
+    display: grid;
+    grid-template-columns: repeat(9,1fr);
+    gap: 0px;
+    width: 300px;
+    margin:2px auto;
+}
+
+.sudoku-column {
+}
+
+.sudoku-cell{
+    flex: 1;
+    position: relative;
+}
+
+.sudoku-cell input {
+    width: 100%;
+    padding: 3px;
+    box-sizing:border-box;
+    font-size: 1.2em;
+    text-align:center;
+    border: 1px solid #ccc;
+    border-radius: 1px;
+    outline: none;
+}
+.sudoku-cell input:hover {
+    border-color: #6cb2ab;
+}
+
+.sudoku-cell input:focus {
+    border-color: #3f8cfb;
+    box-shadow: 0 0 5px rgba(63, 10, 251, 0.7);
+}

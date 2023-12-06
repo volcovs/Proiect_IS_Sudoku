@@ -4,18 +4,22 @@ import './ComponentsfirstPage/gameButtonComponent'
 import ButtonsMenu from "./ComponentsfirstPage/selectGameComponent"
 import'./ComponentsfirstPage/levelButtonsComponent'
 import SudokuBoard from "./ComponentsSecondPage/SudokuBoardComponent";
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-          <h1>PENTRU LUMI</h1>
-          <ButtonsMenu/>
-          <SudokuBoard></SudokuBoard>
 
-      </header>
+import axios from 'axios';
+import React from 'react';
+import FirstPage from "./ComponentsfirstPage/FirstPage";
+import SecondPage from "./ComponentsSecondPage/SecondPage";
 
-    </div>
-  );
+
+class App extends React.Component {
+
+    render() {
+        return (
+            <div className="App">
+                    <SecondPage/>
+            </div>
+        );
+    }
 }
 
 export default App;

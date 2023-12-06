@@ -4,11 +4,8 @@ import SudokuCell from "./SudokuCellComponent";
 import axios from "axios";
 import "../StylingFolder/SudokuBoardStyle.css"
 
-class SudokuBoard extends Component {
-    state = {details: [], }
-
+class SudokuBoard extends Component {state = {details: [], }
     list = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-
 
     constructor(props) {
         super(props);
@@ -35,7 +32,7 @@ class SudokuBoard extends Component {
     handleCellChange = (row, col, value) => {
         const updatedDetails = [...this.state.details];
 
-        updatedDetails[0][`col${col+1}`] = updatedDetails[0][`col${row+1}`]
+        updatedDetails[0][`col${col+1}`] = updatedDetails[0][`col${col+1}`]
             .split(',')
             .map((cell, index) => (index === row ? value : cell))
             .join(',');
@@ -48,6 +45,7 @@ class SudokuBoard extends Component {
             details: updatedDetails,
         });
 
+        //this.onlyUpdateIfCorrect();
     };
 
 
@@ -65,6 +63,25 @@ class SudokuBoard extends Component {
                 ))}
             </div>
         );
+    }
+
+
+    onlyUpdateIfCorrect() {
+        let data_game;
+
+        axios.get('http://localhost:8000/board/')
+            .then(res => {
+                data_game = res.data;
+
+                this.setState({
+                    details: data_game,
+                })
+
+                console.log(data_game)
+            })
+            .catch(err => {
+                "Error mounting data"
+            })
     }
 
     render() {

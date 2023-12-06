@@ -14,7 +14,7 @@ class SudokuCell extends Component {
                 type="number"
                 min="1"
                 max="9"
-                value={this.props.value || ""}
+                value={this.props.value === '0' ? "" : this.props.value}
                 onChange={this.handleChange}
             />
         );

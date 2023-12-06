@@ -1,0 +1,15 @@
+/* TitleComponentStyle.css */
+
+.title-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.title-text {
+    font-size: 2em;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}

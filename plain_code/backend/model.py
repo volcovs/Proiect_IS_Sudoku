@@ -1,4 +1,5 @@
 import mysql.connector
+import random
 
 class Model_Sudoku():
     def __init__(self, host, user, password, db_name):
@@ -9,9 +10,21 @@ class Model_Sudoku():
             port=3306,
             database=db_name
         )
+        self.firstBoard = [
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0]
+             ]
 
 
     def newGame(self):
+        # method for continuing the game already present in database
         m = []
 
         cursor = self.db.cursor()
@@ -54,62 +67,20 @@ class Model_Sudoku():
 
         return True, 0, 0
 
-    def checkCorrect(self, m, solution, num, i, j):
-        # functia primeste matricea de joc, cifra noua si pozitia pe care a fost adaugata cifra
+    def updateDatabase(self, m):
+        cursor = self.db.cursor()
+        cursor.execute('SELECT * FROM solution LIMIT 1')
 
-        # deja cifra in acel patrat
-        flagValid = m[i][j] == 0
+        # lista de tuple (id, difficulty, row1, row2 .. row9)
+        all_data = cursor.fetchall()
 
-        # verificare rand i
-        flagRow = len([e for e in m[i] if e == num]) == 0
+        for e in all_data:
+            id = e[0]
 
-        # verificare rand j
-        flagColumn = len([e[j] for e in m if e[j] == num]) == 0
+        for i in range(0, 9):
+            cursor.execute('UPDATE game SET col' + str(i+1) + ' = "' + m[i] + '" WHERE id = ' + str(id) + ';')
 
-        # verificare patrat 3x3
-        squareRow1 = m[i//3][:3]
-        squareRow2 = m[i//3+1][0:3]
-        squareRow3 = m[i//3+2][:3]
-
-        flagSquare = not (num in squareRow1 or num in squareRow2 or num in squareRow3)
-
-        # if the solution is known
-        return num == solution[i][j] and flagValid
-
-        # return flagValid and flagRow and flagColumn and flagSquare
-
-
-    def addNumber(self, m, solution, num, i, j):
-        if self.checkCorrect(m, solution, num, i, j):
-            m[i][j] = num
-
-            #constructor for the updated row on the sudoku board
-            row = ""
-            for e in m[i]:
-                row = row + str(e)
-
-            #get the id of the game to be updated
-            cursor = self.db.cursor()
-            cursor.execute('SELECT * FROM solution LIMIT 1')
-
-            # lista de tuple (id, difficulty, row1, row2 .. row9)
-            all_data = cursor.fetchall()
-
-            for e in all_data:
-                id = e[0]
-
-            #update database
-            cursor = self.db.cursor()
-            cursor.execute('UPDATE game SET row' + str(i+1) + ' = "' + row + '" WHERE id = ' + str(id))
-            self.db.commit()
-
-            for r in m:
-                if len([e for e in r if e == 0]) == 0:
-                    print("You won")
-        else:
-            print("Incorrect number")
-            # maybe show the number with red on the website
-            # perhaps return different int values for each error
+        self.db.commit()
 
 
     def abortGame(self):
@@ -117,3 +88,74 @@ class Model_Sudoku():
         cursor.execute('DELETE * FROM solution LIMIT 1')
         cursor.execute('DELETE * FROM game LIMIT 1')
         self.db.commit()
+
+
+    # the board generating methods
+    def findEmpty(self, board):
+        for y in range(len(board)):
+            for x in range(len(board[0])):
+                if board[y][x] == 0:
+                    return y, x  # y = row , x = column
+        # if we got here it mean that we finish the sudoku, so return none
+        return None
+
+    def validCheck(self, board, number, coordinates):
+        # checking row
+        for x in range(len(board[0])):
+            if number == board[coordinates[0]][x] and coordinates[1] != x:  # coordinates[0]= row
+                return False
+
+        # checking column
+        for y in range(len(board)):
+            if number == board[y][coordinates[1]] and coordinates[0] != y:
+                return False
+
+        # checking the box
+        box_x = coordinates[1] // 3
+        box_y = coordinates[0] // 3
+
+        for y in range(box_y * 3, box_y * 3 + 3):
+            for x in range(box_x * 3, box_x * 3 + 3):
+                if number == board[y][x] and (y, x) != coordinates:
+                    return False
+
+        return True
+
+    def generateRandomBoard(self, board):
+        # end condition:- getting to the end of the board - the function findEmpty return NONE
+        find = self.findEmpty(board)
+        if find is None:  # if find != False
+            return True
+        else:
+            row, col = find
+        for number in range(1, 10):
+            randomNumber = random.randint(1, 9)
+            if self.validCheck(board, randomNumber, (row, col)):
+                board[row][col] = randomNumber
+                if self.generateRandomBoard(board):
+                    return True
+
+                board[row][col] = 0
+        return False
+
+    def deleteCells(self, firstBoard, number):
+        while number:
+            row = random.randint(0, 8)
+            col = random.randint(0, 8)
+            if firstBoard[row][col] != 0:
+                firstBoard[row][col] = 0
+                number = number - 1
+
+    def generateLevel(self, difficulty):
+        self.generateRandomBoard(self.firstBoard)
+        # update database, solution table
+
+        if difficulty == "Easy":
+            self.deleteCells(self.firstBoard, 30)
+        elif difficulty == "Medium":
+            self.deleteCells(self.firstBoard, 40)
+        else:
+            # difficulty == "Hard" or invalid
+            self.deleteCells(self.firstBoard, 50)
+
+        # update database, game table
