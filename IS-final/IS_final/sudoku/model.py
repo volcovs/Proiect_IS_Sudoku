@@ -37,6 +37,7 @@ class Model_Sudoku():
             for i in range(2, 11):
                 m.append(e[i])
 
+        board = m
         return m
 
 
@@ -53,6 +54,7 @@ class Model_Sudoku():
             for i in range(3, 12):
                 m.append(e[i])
 
+        board = m
         return m
 
 
@@ -85,8 +87,8 @@ class Model_Sudoku():
 
     def abortGame(self):
         cursor = self.db.cursor()
-        cursor.execute('DELETE * FROM solution LIMIT 1')
-        cursor.execute('DELETE * FROM game LIMIT 1')
+        cursor.execute('DELETE FROM solution')
+        cursor.execute('DELETE FROM game')
         self.db.commit()
 
 
@@ -147,15 +149,90 @@ class Model_Sudoku():
                 number = number - 1
 
     def generateLevel(self, difficulty):
+        self.abortGame()
         self.generateRandomBoard(self.firstBoard)
-        # update database, solution table
+        cursor = self.db.cursor()
 
         if difficulty == "Easy":
+            # update database, solution table
+            cursor.execute(
+                'INSERT INTO solution(id_game, difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                ' VALUES (1, "easy", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][3]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][4]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+            self.db.commit()
             self.deleteCells(self.firstBoard, 30)
+
+            cursor.execute(
+                'INSERT INTO game(difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                ' VALUES ("easy", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][3]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][4]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+            self.db.commit()
         elif difficulty == "Medium":
-            self.deleteCells(self.firstBoard, 40)
+            cursor.execute(
+                'INSERT INTO solution(id_game, difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                ' VALUES (1, "medium", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][3]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][4]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+            self.db.commit()
+            self.deleteCells(self.firstBoard, 35)
+
+            cursor.execute(
+                'INSERT INTO game(difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                ' VALUES ("medium", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][3]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][4]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+            self.db.commit()
         else:
             # difficulty == "Hard" or invalid
-            self.deleteCells(self.firstBoard, 50)
+            cursor.execute(
+                'INSERT INTO solution(id_game, difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                ' VALUES (1, "hard", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][3]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][4]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+            self.db.commit()
+            self.deleteCells(self.firstBoard, 40)
 
-        # update database, game table
+            cursor.execute(
+                'INSERT INTO game(difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                ' VALUES ("hard", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][3]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][4]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+            self.db.commit()

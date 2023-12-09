@@ -22,6 +22,10 @@ class App extends React.Component {
     onSelectLevel = (selectedLevel, level) => {
         // Add logic to transition to the second page, for example:
         this.setState({ currentPage: selectedLevel});
+
+        axios.post('http://localhost:8000/diffmsgs/', {msg: level})
+            .then(r => console.log(r))
+            .catch(err => console.log(err))
     };
 
 render() {
