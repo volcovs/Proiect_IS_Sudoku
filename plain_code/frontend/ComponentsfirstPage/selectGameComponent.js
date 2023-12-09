@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import './gameButtonComponent'
 import GameButton from "./gameButtonComponent";
 import LevelsButtons from "./levelButtonsComponent";
-import axios from "axios";
 
 class ButtonsMenu extends Component{
     state = {
@@ -14,32 +13,21 @@ class ButtonsMenu extends Component{
         console.log("incepere joc")
     }
     handleButtonContinueGame = () => {
-        let data_game;
-
+        const { onSelectLevel, onClose } = this.props;
+        onSelectLevel(2, "Easy");
         console.log("continuam jocul")
-        axios.get('http://localhost:8000/board/')
-            .then(res => {
-                data_game = res.data;
-
-                this.setState({
-                    details: data_game,
-                })
-
-                console.log(data_game)
-            })
-            .catch(err => {
-                "Error mounting data"
-            })
 
     }
     render(){
+        const { onSelectLevel, onClose } = this.props;
+
        return (
            <div>
                <GameButton onClick = {this.handleButtonContinueGame} text = "continue  game"/>
                <GameButton onClick = {this.handleButtonStartGame} text = "start new game"/>
 
                {this.state.showLevelOptions &&
-               <LevelsButtons/>}
+               <LevelsButtons onSelectLevel={onSelectLevel} onClose={onClose}/>}
            </div>
        )
     }

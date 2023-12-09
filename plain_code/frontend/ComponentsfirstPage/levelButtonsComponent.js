@@ -3,9 +3,9 @@ import "../StylingFolder/ButtonStyling.css"
 const LevelsButtons = ({onSelectLevel, onClose}) =>{
     const levels = ['Easy', 'Medium', 'Hard'];
     return (
-        < div className="levels-buttons">
+        <div className="levels-buttons">
             {levels.map((level,index)=>(
-                <button className="game-button" key={index} onClick={()=>onSelectLevel({level})}>
+                <button className="game-button" key={index} onClick={()=>onSelectLevel(2, level)}>
                     {level}
                 </button>
                 ))}

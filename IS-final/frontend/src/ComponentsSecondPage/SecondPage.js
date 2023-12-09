@@ -1,10 +1,9 @@
 import React, {Component} from "react";
 import "./SudokuBoardComponent";
 import "../StylingFolder/TitleStyling.css";
-import ButtonsMenu from "../ComponentsfirstPage/selectGameComponent";
 import SudokuBoard from "./SudokuBoardComponent";
 import axios from "axios";
-import {render} from "@testing-library/react";
+import Timer from "./Timer";
 
 class SecondPage extends Component {
     state = {text: "", }
@@ -47,8 +46,8 @@ class SecondPage extends Component {
         return this.text;
     }
 
-        render()
-        {
+    render()
+    {
             this.getMessage();
 
             return (
@@ -56,11 +55,12 @@ class SecondPage extends Component {
                     <div className="title-container">
                         <h1 className="title-text">SUDOKU</h1>
                     </div>
+                    <Timer/>
                     <SudokuBoard/>
                     <h3 className="text-message">{this.state.text}</h3>
+                    <button className="game-button">Hint</button>
                 </div>
             );
-        }
-
-};
+    }
+}
 export default SecondPage
