@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import render
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -5,26 +6,27 @@ from .models import *
 from rest_framework.response import Response
 from .serializer import *
 from . import model
+import time
 
 m = model.Model_Sudoku('localhost', 'root', 'TheHateUGive13$', 'sudoku')
-aux = m.newGame()
-board = m.newGame()
-solutionToGame = m.newGameSolution()
+board = []
+solutionToGame = []
 
 class ReactView(APIView):
     serializer_class = ReactSerializer
 
     # always sends the board saved inside the database
     def get(self, request):
-        # m = model.Model_Sudoku('localhost', 'root', 'TheHateUGive13$', 'sudoku')
-        # board = m.newGame()
+        global board
+        global solutionToGame
 
-        # resp = [{"row1": output.row1, "row2": output.row2, "row3": output.row3, "row4": output.row4, "row5": output.row5,
-        # "row6": output.row6, "row7": output.row7, "row8": output.row8, "row9": output.row9}
-        # for output in React.objects.all()]
+        # necessary delay, otherwise the sql connection can't handle the requests
+        time.sleep(0.1)
+        board = m.newGame()
+        solutionToGame = m.newGameSolution()
 
         resp = [{"col1": board[0], "col2": board[1], "col3": board[2], "col4": board[3], "col5": board[4],
-                 "col6": board[5], "col7": board[6], "col8": board[7], "col9": board[8]}]
+                "col6": board[5], "col7": board[6], "col8": board[7], "col9": board[8]}]
 
         return Response(resp)
 
@@ -32,12 +34,10 @@ class ReactView(APIView):
     # , updates the database
     def post(self, request):
         React.objects.all().delete()
-
-        # m = model.Model_Sudoku('localhost', 'root', 'TheHateUGive13$', 'sudoku')
-        # solutionToGame = m.newGameSolution()
+        global board
+        global solutionToGame
 
         serializer = ReactSerializer(data=request.data)
-        # aux = m.newGame()
 
         if serializer.is_valid(raise_exception=True):
             board[0] = serializer.validated_data['col1']
@@ -64,10 +64,8 @@ class MsgView(APIView):
 
     # checks the current board and returns an error message if something is wrong
     def get(self, request):
-        # m = model.Model_Sudoku('localhost', 'root', 'TheHateUGive13$', 'sudoku')
-        # board = m.newGame()
-        # solutionToGame = m.newGameSolution()
-
+        global board
+        global solutionToGame
         string = "Correct so far"
 
         flag, x, y = m.checkCorrectIneff(board, solutionToGame)
@@ -100,7 +98,9 @@ class DiffView(APIView):
 
     # checks the message received from client, and generates a new board of specified difficulty
     def post(self, request):
-        # m = model.Model_Sudoku('localhost', 'root', 'TheHateUGive13$', 'sudoku')
+        global board
+        global solutionToGame
+
         DifficultyMsg.objects.all().delete()
 
         serializer = DiffSerializer(data=request.data)
@@ -119,7 +119,11 @@ class DiffView(APIView):
                 print('hard game')
                 m.generateLevel("Hard")
             else:
+                # continue game or invalid choice
                 print('Invalid difficulty choice')
+
+            board = m.newGame()
+            solutionToGame = m.newGameSolution()
 
             serializer.save()
             return Response(serializer.data)
