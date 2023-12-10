@@ -52,8 +52,7 @@ class ReactView(APIView):
 
             flag, x, y = m.checkCorrectIneff(board, solutionToGame)
             if flag:
-                # m.updateDatabase(board)
-                pass
+                m.updateDatabase(board)
 
             serializer.save()
             return Response(serializer.data)
@@ -120,7 +119,7 @@ class DiffView(APIView):
                 m.generateLevel("Hard")
             else:
                 # continue game or invalid choice
-                print('Invalid difficulty choice')
+                print('Continue game or invalid difficulty choice')
 
             board = m.newGame()
             solutionToGame = m.newGameSolution()

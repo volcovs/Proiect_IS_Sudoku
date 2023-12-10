@@ -14,7 +14,7 @@ class ButtonsMenu extends Component{
     }
     handleButtonContinueGame = () => {
         const { onSelectLevel, onClose } = this.props;
-        onSelectLevel(2, "Easy");
+        onSelectLevel(2, "Continue");
         console.log("continuam jocul")
 
     }

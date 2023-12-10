@@ -29,6 +29,24 @@ class SudokuBoard extends Component {state = {details: [], }
 
     }
 
+    getBoard() {
+        let data_game;
+
+        axios.get('http://localhost:8000/board/')
+            .then(res => {
+                data_game = res.data;
+
+                this.setState({
+                    details: data_game,
+                })
+
+                console.log(data_game)
+            })
+            .catch(err => {
+                "Error mounting data"
+            })
+    }
+
     handleCellChange = (row, col, value) => {
         const updatedDetails = [...this.state.details];
 
