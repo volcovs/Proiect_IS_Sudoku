@@ -69,6 +69,19 @@ class Model_Sudoku():
 
         return True, 0, 0
 
+    def checkVictory(self, m, solution):
+        matrix1 = [e.split(",") for e in m]
+        matrix2 = [e.split(",") for e in solution]
+
+        for i in range(len(matrix1)):
+            for j in range(len(matrix1[0])):
+                if matrix1[i][j] == '0':
+                    return False
+                if matrix1[i][j] != '0' and matrix1[i][j] != matrix2[i][j]:
+                    return False
+
+        return True
+
     def updateDatabase(self, m):
         cursor = self.db.cursor()
         cursor.execute('SELECT * FROM solution LIMIT 1')

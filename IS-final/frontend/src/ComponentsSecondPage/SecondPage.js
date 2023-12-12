@@ -6,7 +6,7 @@ import axios from "axios";
 import Timer from "./Timer";
 
 class SecondPage extends Component {
-    state = {text: "", }
+    state = {text: "", timerPaused: false}
 
     constructor(props) {
 
@@ -27,6 +27,18 @@ class SecondPage extends Component {
                 "Error mounting data"
             })
     }
+
+    handleTimerStop = () => {
+        this.setState({
+            timerPaused: true,
+        });
+    };
+
+    handleTimerStart = () => {
+        this.setState({
+            timerPaused: false,
+        });
+    };
 
     getMessage() {
         let msg;
@@ -55,8 +67,8 @@ class SecondPage extends Component {
                     <div className="title-container">
                         <h1 className="title-text">SUDOKU</h1>
                     </div>
-                    <Timer/>
-                    <SudokuBoard/>
+                    <Timer onPause={this.handleTimerStop} onStart={this.handleTimerStart} />
+                    <SudokuBoard timerPaused={this.state.timerPaused} />
                     <h3 className="text-message">{this.state.text}</h3>
                     <button className="game-button">Hint</button>
                 </div>

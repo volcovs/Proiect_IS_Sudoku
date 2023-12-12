@@ -4,66 +4,76 @@ import SudokuCell from "./SudokuCellComponent";
 import axios from "axios";
 import "../StylingFolder/SudokuBoardStyle.css"
 
-class SudokuBoard extends Component {state = {details: [], }
+class SudokuBoard extends Component {state = {details: [], originalBoard: [], fetched: false}
     list = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
     constructor(props) {
         super(props);
-
         let data_game;
 
-        axios.get('http://localhost:8000/board/')
-            .then(res => {
-                data_game = res.data;
+        if (this.state.fetched === false) {
+            axios.get('http://localhost:8000/board/')
+                .then(res => {
+                    data_game = res.data;
+                    this.setState({
+                        details: data_game,
+                        originalBoard: data_game,
+                        fetched: true,
+                    })
 
-                this.setState({
-                    details: data_game,
+                    console.log(data_game)
                 })
-
-                console.log(data_game)
-            })
-            .catch(err => {
-                "Error mounting data"
-            })
-
-
-    }
-
-    getBoard() {
-        let data_game;
-
-        axios.get('http://localhost:8000/board/')
-            .then(res => {
-                data_game = res.data;
-
-                this.setState({
-                    details: data_game,
+                .catch(err => {
+                    "Error mounting data"
                 })
+        }
+        else {
+            axios.get('http://localhost:8000/board/')
+                .then(res => {
+                    data_game = res.data;
+                    this.setState({
+                        details: data_game,
+                        originalBoard: this.state.originalBoard,
+                        fetched: true,
+                    })
 
-                console.log(data_game)
-            })
-            .catch(err => {
-                "Error mounting data"
-            })
+                    console.log(data_game)
+                })
+                .catch(err => {
+                    "Error mounting data"
+                })
+        }
+
     }
 
     handleCellChange = (row, col, value) => {
+        const { timerPaused } = this.props;
+
         const updatedDetails = [...this.state.details];
+        //deep copy, to avoid modifications to the original board
+        const original = JSON.parse(JSON.stringify(this.state.originalBoard));
 
-        updatedDetails[0][`col${col+1}`] = updatedDetails[0][`col${col+1}`]
-            .split(',')
-            .map((cell, index) => (index === row ? value : cell))
-            .join(',');
+        //compare to the original board, in order to stop the modifications made during the game to
+        //unmodifiable values
+        if (timerPaused === false) {
+            if (original[0][`col${col + 1}`].split(',')[row] === '0') {
+                updatedDetails[0][`col${col + 1}`] = updatedDetails[0][`col${col + 1}`]
+                    .split(',')
+                    .map((cell, index) => (index === row ? value : cell))
+                    .join(',');
 
-        axios.post('http://localhost:8000/board/', updatedDetails[0])
-            .then(r => console.log(r))
-            .catch(err => console.log(err))
+                axios.post('http://localhost:8000/board/', updatedDetails[0])
+                    .then(r => console.log(r))
+                    .catch(err => console.log(err))
 
-        this.setState({
-            details: updatedDetails,
-        });
-
-        //this.onlyUpdateIfCorrect();
+                //update the state, but keep the original board unmodified
+                this.setState({
+                    details: updatedDetails,
+                    originalBoard: original,
+                    fetched: true,
+                });
+            }
+        }
     };
 
 
@@ -83,33 +93,38 @@ class SudokuBoard extends Component {state = {details: [], }
         );
     }
 
+    render() {
+        let msg;
+        let flag = false;
 
-    onlyUpdateIfCorrect() {
-        let data_game;
-
-        axios.get('http://localhost:8000/board/')
+        axios.get('http://localhost:8000/victorymsgs/')
             .then(res => {
-                data_game = res.data;
+                msg = res.data;
+                let text = msg[0][`msg`];
 
-                this.setState({
-                    details: data_game,
-                })
-
-                console.log(data_game)
+                flag = text !== "False";
             })
             .catch(err => {
                 "Error mounting data"
             })
-    }
 
-    render() {
-        return (
-            <div className="sudoku-board">
-                {this.state.details.map((elem, index) => (
-                    [...Array(9)].map((_, colIndex) => this.renderColumn(elem[`col${colIndex + 1}`], colIndex))
-                ))}
-            </div>
-        );
+
+        if (flag === false) {
+            return (
+                <div className="sudoku-board">
+                    {this.state.details.map((elem, index) => (
+                        [...Array(9)].map((_, colIndex) => this.renderColumn(elem[`col${colIndex + 1}`], colIndex))
+                    ))}
+                </div>
+            );
+        }
+        else {
+            return (
+                <div className="victory-msg">
+                    <h1>YOU WON!</h1>
+                </div>
+            );
+        }
     }
 }
 

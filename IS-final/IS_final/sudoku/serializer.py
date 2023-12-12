@@ -18,3 +18,9 @@ class DiffSerializer(serializers.ModelSerializer):
     class Meta:
         model = DifficultyMsg
         fields = ['msg']
+
+
+class VictorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VictoryMsg
+        fields = ['msg']

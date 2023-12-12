@@ -126,3 +126,30 @@ class DiffView(APIView):
 
             serializer.save()
             return Response(serializer.data)
+
+
+class VictoryView(APIView):
+    serializer_class = VictorySerializer
+
+    def get(self, request):
+        global board
+        global solutionToGame
+        string = "False"
+
+        flag = m.checkVictory(board, solutionToGame)
+        if flag:
+            string = "Victory"
+
+        resp = [{"msg": string}]
+
+        return Response(resp)
+
+    # no need for post requests
+    def post(self, request):
+        VictoryMsg.objects.all().delete()
+
+        serializer = VictorySerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)

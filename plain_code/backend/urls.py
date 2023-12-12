@@ -17,11 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from sudoku.views import ReactView, MsgView, DiffView
+from sudoku.views import ReactView, MsgView, DiffView, VictoryView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('board/', ReactView.as_view(), name="sudoku"),
     path('errmsgs/', MsgView.as_view(), name="error messages"),
-    path('diffmsgs/', DiffView.as_view(), name="difficulty messages")
+    path('diffmsgs/', DiffView.as_view(), name="difficulty messages"),
+    path('victorymsgs/', VictoryView.as_view(), name="checking victory")
 ]

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Timer = () => {
+const Timer = ({onPause, onStart}) => {
     const [seconds, setSeconds] = useState(0); // Initial value for the timer
     const [isPaused, setIsPaused] = useState(false); // New state for tracking whether the timer is paused
 
@@ -25,7 +25,13 @@ const Timer = () => {
 
     // Function to handle the button click and toggle the paused state
     const handlePauseClick = () => {
-        setIsPaused((prevIsPaused) => !prevIsPaused);
+            setIsPaused((prevIsPaused) => !prevIsPaused);
+            if (isPaused) {
+                onStart();
+            }
+            else {
+                onPause();
+            }
     };
 
     return (

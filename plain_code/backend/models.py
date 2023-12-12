@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class React(models.Model):
     col1 = models.CharField(max_length=18)
     col2 = models.CharField(max_length=18)
@@ -17,4 +18,8 @@ class ErrorMsg(models.Model):
 
 
 class DifficultyMsg(models.Model):
+    msg = models.CharField(max_length=7)
+
+
+class VictoryMsg(models.Model):
     msg = models.CharField(max_length=7)
