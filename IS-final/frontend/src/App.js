@@ -1,9 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import './ComponentsfirstPage/gameButtonComponent'
-import ButtonsMenu from "./ComponentsfirstPage/selectGameComponent"
 import'./ComponentsfirstPage/levelButtonsComponent'
-import SudokuBoard from "./ComponentsSecondPage/SudokuBoardComponent";
 
 import axios from 'axios';
 import React, { useState } from "react";
@@ -28,6 +26,10 @@ class App extends React.Component {
             .catch(err => console.log(err))
     };
 
+    selectBack = () => {
+        this.onSelectLevel(1, "Continue")
+    }
+
 render() {
         return (
             <div className="App">
@@ -41,6 +43,7 @@ render() {
                 {this.state.currentPage === 2 && (
                     <div>
                         {/* Content of the second page */}
+                        <button className={"game-button"} onClick={this.selectBack}>Back</button>
                         <SecondPage/>
                     </div>
                 )}

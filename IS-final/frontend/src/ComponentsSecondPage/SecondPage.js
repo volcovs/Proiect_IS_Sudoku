@@ -1,31 +1,33 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
+import axios from "axios";
 import "./SudokuBoardComponent";
 import "../StylingFolder/TitleStyling.css";
 import SudokuBoard from "./SudokuBoardComponent";
-import axios from "axios";
 import Timer from "./Timer";
 
 class SecondPage extends Component {
-    state = {text: "", timerPaused: false}
+    state = {
+        text: "",
+        timerPaused: false,
+    };
 
-    constructor(props) {
+    componentDidMount() {
+        this.fetchErrorMessage();
+    }
 
-        super(props);
-        let msg;
-
-        axios.get('http://localhost:8000/errmsgs/')
-            .then(res => {
-                msg = res.data;
-
+    fetchErrorMessage() {
+        axios
+            .get("http://localhost:8000/errmsgs/")
+            .then((res) => {
+                const msg = res.data;
                 this.setState({
-                    text: msg[0][`msg`],
-                })
-
+                    text: msg[0]?.msg || "",
+                });
                 console.log(this.state.text);
             })
-            .catch(err => {
-                "Error mounting data"
-            })
+            .catch((err) => {
+                console.error("Error fetching error message:", err);
+            });
     }
 
     handleTimerStop = () => {
@@ -40,39 +42,29 @@ class SecondPage extends Component {
         });
     };
 
-    getMessage() {
-        let msg;
+    handleVictory = () => {
+        this.setState({
+            timerPaused: true,
+        })
 
-        axios.get('http://localhost:8000/errmsgs/')
-            .then(res => {
-                msg = res.data;
-
-                this.setState({
-                    text: msg[0][`msg`],
-                })
-            })
-            .catch(err => {
-                "Error mounting data"
-            })
-
-        return this.text;
+        //send timer information to Django, for statistics
     }
 
-    render()
-    {
-            this.getMessage();
+    render() {
+        this.fetchErrorMessage(); // Fetch the error message dynamically
 
-            return (
-                <div className="second-page">
-                    <div className="title-container">
-                        <h1 className="title-text">SUDOKU</h1>
-                    </div>
-                    <Timer onPause={this.handleTimerStop} onStart={this.handleTimerStart} />
-                    <SudokuBoard timerPaused={this.state.timerPaused} />
-                    <h3 className="text-message">{this.state.text}</h3>
-                    <button className="game-button">Hint</button>
+        return (
+            <div className="second-page">
+                <div className="title-container">
+                    <h1 className="title-text">SUDOKU</h1>
                 </div>
-            );
+                <Timer onPause={this.handleTimerStop} onStart={this.handleTimerStart} timerPause={this.state.timerPaused} />
+                <SudokuBoard timerPaused={this.state.timerPaused} onVictory={this.handleVictory} />
+                <h3 className="text-message">{this.state.text}</h3>
+                <button className="game-button">Hint</button>
+            </div>
+        );
     }
 }
-export default SecondPage
+
+export default SecondPage;

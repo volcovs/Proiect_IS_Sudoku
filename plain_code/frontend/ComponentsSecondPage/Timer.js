@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Timer = ({onPause, onStart}) => {
+const Timer = ({onPause, onStart, timerPause}) => {
     const [seconds, setSeconds] = useState(0); // Initial value for the timer
     const [isPaused, setIsPaused] = useState(false); // New state for tracking whether the timer is paused
 
@@ -33,6 +33,18 @@ const Timer = ({onPause, onStart}) => {
                 onPause();
             }
     };
+
+    const verifyCurrentState = () => {
+        if (timerPause === true) {
+            setIsPaused((prevIsPaused) => !prevIsPaused);
+            if (isPaused) {
+                onStart();
+            }
+            else {
+                onPause();
+            }
+        }
+    }
 
     return (
         <div className="timer-container">
