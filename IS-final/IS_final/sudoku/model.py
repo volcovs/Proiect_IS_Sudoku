@@ -1,6 +1,7 @@
 import mysql.connector
 import random
 
+
 class Model_Sudoku():
     def __init__(self, host, user, password, db_name):
         self.db = mysql.connector.connect(
@@ -11,52 +12,92 @@ class Model_Sudoku():
             database=db_name
         )
         self.firstBoard = [
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0]
-             ]
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
 
+    def getUserFromDatabase(self, username, password):
+        cursor = self.db.cursor()
+        cursor.execute('SELECT * FROM users WHERE username = "' + username + '" AND pass = "' + password + '";')
 
-    def newGame(self):
+        user = cursor.fetchall()
+        if len(user) == 0:
+            return "anon"
+
+        # return the username stored in the database
+        return user[0][1]
+
+    def getAllUserData(self, username):
+        # presumably, the user has already logged in and there is no need to check the password
+        cursor = self.db.cursor()
+        cursor.execute('SELECT * FROM users WHERE username = "' + username + '";')
+
+        user = cursor.fetchall()
+        # return the user data as a list
+        return user
+
+    def addNewUserToDatabase(self, user_data):
+        cursor = self.db.cursor()
+
+        cursor.execute(
+            'INSERT INTO users(username, first_name, last_name, pass, games_won, games_started, total_time, best_time) VALUES ("'
+            + user_data['username'] + '", "' + user_data['first_name'] + '", "' + user_data['last_name'] + '", "'
+            + user_data['password'] + '", ' + str(user_data['games_won']) + ', ' + str(user_data['games_total']) + ', "' + user_data['time_total'] + '", "'
+            + user_data['best_time'] + '");')
+
+        self.db.commit()
+
+    def newGame(self, username):
         # method for continuing the game already present in database
         m = []
 
         cursor = self.db.cursor()
-        cursor.execute('SELECT * FROM game LIMIT 1')
+        cursor.execute('SELECT * FROM game, users WHERE username = "' + username + '" AND user_id = users.id;')
 
-        # lista de tuple (id, difficulty, row1, row2 .. row9)
+        # lista de tuple (id, difficulty, col1, col2 ... col9)
         all_data = cursor.fetchall()
 
         for e in all_data:
             for i in range(2, 11):
                 m.append(e[i])
 
-        board = m
         return m
 
-
-    def newGameSolution(self):
+    def newGameSolution(self, username):
         m = []
 
         cursor = self.db.cursor()
-        cursor.execute('SELECT * FROM solution LIMIT 1')
+        cursor.execute(
+            'SELECT solution.id, solution.id_game, solution.difficulty, solution.col1, solution.col2, solution.col3, solution.col4, solution.col5, solution.col6, solution.col7, solution.col8,' +
+            'solution.col9 FROM game, solution, users WHERE username = "' + username + '" AND solution.user_id = users.id AND id_game = game.id;')
 
-        # lista de tuple (id, difficulty, row1, row2 .. row9)
+        # lista de tuple (id, difficulty, col1, col2 ... col9)
         all_data = cursor.fetchall()
 
         for e in all_data:
             for i in range(3, 12):
                 m.append(e[i])
 
-        board = m
         return m
 
+    def getHint(self, m, solution):
+        matrix1 = [e.split(",") for e in m]
+        matrix2 = [e.split(",") for e in solution]
+
+        i = random.randint(0, len(matrix1) - 1)
+        j = random.randint(0, len(matrix1) - 1)
+        while matrix1[i][j] != '0':
+            i = random.randint(0, len(matrix1) - 1)
+            j = random.randint(0, len(matrix1) - 1)
+
+        return [matrix2[i][j], i, j]
 
     def checkCorrectIneff(self, m, solution):
         matrix1 = [e.split(",") for e in m]
@@ -73,6 +114,9 @@ class Model_Sudoku():
         matrix1 = [e.split(",") for e in m]
         matrix2 = [e.split(",") for e in solution]
 
+        if (not matrix1) or (not matrix2):
+            return False
+
         for i in range(len(matrix1)):
             for j in range(len(matrix1[0])):
                 if matrix1[i][j] == '0':
@@ -82,28 +126,31 @@ class Model_Sudoku():
 
         return True
 
-    def updateDatabase(self, m):
+    def updateDatabase(self, m, username):
         cursor = self.db.cursor()
-        cursor.execute('SELECT * FROM solution LIMIT 1')
+        cursor.execute(
+            'SELECT solution.id, solution.id_game, solution.difficulty, solution.col1, solution.col2, solution.col3, solution.col4, solution.col5, solution.col6, solution.col7, solution.col8,' +
+            'solution.col9 FROM game, solution, users WHERE username = "' + username + 'AND user_id = users.id AND id_game = game.id;')
 
-        # lista de tuple (id, difficulty, row1, row2 .. row9)
+        # lista de tuple (id, id_game, difficulty, col1, col2 .. col9)
         all_data = cursor.fetchall()
 
         for e in all_data:
             id = e[0]
 
         for i in range(0, 9):
-            cursor.execute('UPDATE game SET col' + str(i+1) + ' = "' + m[i] + '" WHERE id = ' + str(id) + ';')
+            cursor.execute('UPDATE game SET col' + str(i + 1) + ' = "' + m[i] + '" WHERE id = ' + str(id) + ';')
 
         self.db.commit()
 
-
-    def abortGame(self):
+    def abortGame(self, user):
         cursor = self.db.cursor()
-        cursor.execute('DELETE FROM solution')
-        cursor.execute('DELETE FROM game')
-        self.db.commit()
+        cursor.execute('SELECT * FROM users WHERE username = "' + user + '";')
+        user_data = cursor.fetchall()
 
+        cursor.execute('DELETE FROM solution WHERE user_id = ' + str(user_data[0][0]) + ';')
+        cursor.execute('DELETE FROM game WHERE user_id = ' + str(user_data[0][0]) + ';')
+        self.db.commit()
 
     # the board generating methods
     def findEmpty(self, board):
@@ -111,7 +158,7 @@ class Model_Sudoku():
             for x in range(len(board[0])):
                 if board[y][x] == 0:
                     return y, x  # y = row , x = column
-        # if we got here it mean that we finish the sudoku, so return none
+        # if we got here it means that we finished the sudoku, so return none
         return None
 
     def validCheck(self, board, number, coordinates):
@@ -137,7 +184,7 @@ class Model_Sudoku():
         return True
 
     def generateRandomBoard(self, board):
-        # end condition:- getting to the end of the board - the function findEmpty return NONE
+        # end condition:- getting to the end of the board - the function findEmpty returns NONE
         find = self.findEmpty(board)
         if find is None:  # if find != False
             return True
@@ -161,15 +208,18 @@ class Model_Sudoku():
                 firstBoard[row][col] = 0
                 number = number - 1
 
-    def generateLevel(self, difficulty):
-        self.abortGame()
+    def generateLevel(self, difficulty, username):
+        self.abortGame(username)
         self.generateRandomBoard(self.firstBoard)
         cursor = self.db.cursor()
+
+        cursor.execute('SELECT * FROM users WHERE username = "' + username + '";')
+        user_data = cursor.fetchall()
 
         if difficulty == "Easy":
             # update database, solution table
             cursor.execute(
-                'INSERT INTO solution(id_game, difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                'INSERT INTO solution(id_game, difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9, user_id)'
                 ' VALUES (1, "easy", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
@@ -178,12 +228,13 @@ class Model_Sudoku():
                 ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
-                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '", ' +
+                str(user_data[0][0]) + ');')
             self.db.commit()
             self.deleteCells(self.firstBoard, 30)
 
             cursor.execute(
-                'INSERT INTO game(difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                'INSERT INTO game(difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9, user_id)'
                 ' VALUES ("easy", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
@@ -192,11 +243,12 @@ class Model_Sudoku():
                 ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
-                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '", ' +
+                str(user_data[0][0]) + ');')
             self.db.commit()
         elif difficulty == "Medium":
             cursor.execute(
-                'INSERT INTO solution(id_game, difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                'INSERT INTO solution(id_game, difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9, user_id)'
                 ' VALUES (1, "medium", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
@@ -205,12 +257,13 @@ class Model_Sudoku():
                 ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
-                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '", ' +
+                str(user_data[0][0]) + ');')
             self.db.commit()
             self.deleteCells(self.firstBoard, 35)
 
             cursor.execute(
-                'INSERT INTO game(difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                'INSERT INTO game(difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9, user_id)'
                 ' VALUES ("medium", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
@@ -219,12 +272,13 @@ class Model_Sudoku():
                 ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
-                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '", ' +
+                str(user_data[0][0]) + ');')
             self.db.commit()
         else:
             # difficulty == "Hard" or invalid
             cursor.execute(
-                'INSERT INTO solution(id_game, difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                'INSERT INTO solution(id_game, difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9, user_id)'
                 ' VALUES (1, "hard", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
@@ -233,12 +287,13 @@ class Model_Sudoku():
                 ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
-                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '", ' +
+                str(user_data[0][0]) + ');')
             self.db.commit()
             self.deleteCells(self.firstBoard, 40)
 
             cursor.execute(
-                'INSERT INTO game(difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9)'
+                'INSERT INTO game(difficulty, col1, col2, col3, col4, col5, col6, col7, col8, col9, user_id)'
                 ' VALUES ("hard", "' + ','.join([str(x) for x in self.firstBoard[:][0]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][1]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][2]]) + '", "' +
@@ -247,5 +302,6 @@ class Model_Sudoku():
                 ','.join([str(x) for x in self.firstBoard[:][5]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][6]]) + '", "' +
                 ','.join([str(x) for x in self.firstBoard[:][7]]) + '", "' +
-                ','.join([str(x) for x in self.firstBoard[:][8]]) + '");')
+                ','.join([str(x) for x in self.firstBoard[:][8]]) + '", ' +
+                str(user_data[0][0]) + ');')
             self.db.commit()
