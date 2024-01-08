@@ -7,7 +7,7 @@ import axios from 'axios';
 import React, { useState } from "react";
 import FirstPage from "./ComponentsfirstPage/FirstPage";
 import SecondPage from "./ComponentsSecondPage/SecondPage";
-
+import "./StylingFolder/PageStyle.css";
 
 class App extends React.Component {
     constructor(props) {
@@ -35,16 +35,14 @@ render() {
             <div className="App">
                 {this.state.currentPage === 1 && (
                     <div>
-                        {/* Content of the first page */}
                         <FirstPage onSelectLevel={this.onSelectLevel}/>
                     </div>
                 )}
 
                 {this.state.currentPage === 2 && (
-                    <div>
-                        {/* Content of the second page */}
-                        <button className={"game-button"} onClick={this.selectBack}>Back</button>
+                    <div className="como">
                         <SecondPage/>
+                        <button className={"game-button"} onClick={this.selectBack}>Back</button>
                     </div>
                 )}
             </div>

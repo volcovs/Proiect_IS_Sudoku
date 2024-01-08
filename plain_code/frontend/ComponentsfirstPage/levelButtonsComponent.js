@@ -5,7 +5,7 @@ const LevelsButtons = ({onSelectLevel, onClose}) =>{
     return (
         <div className="levels-buttons">
             {levels.map((level,index)=>(
-                <button className="game-button" key={index} onClick={()=>onSelectLevel(2, level)}>
+                <button className="level-button" key={index} onClick={()=>onSelectLevel(2, level)}>
                     {level}
                 </button>
                 ))}

@@ -1,4 +1,61 @@
+.first-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 33vw; /* One-third of the viewport width */
+    height: 95vh; /* Full viewport height */
+    position: fixed;
+    top: 0;
+    left: 33vw;
+    border: 2px solid #4caf50; /* Intense green border */
+    border-radius: 8px;
+}
+.como{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid #411f50; /* Intense green border */
+    border-radius: 8px;
+    width: 33vw; /* One-third of the viewport width */
+    height: 95vh; /* Full viewport height */
+    position: fixed;
+    top: 0;
+    left: 33vw;
+}
+.title-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.title-text {
+    font-size: 2em;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
 .hint-container{
     align-items: flex-end;
     justify-content: flex-end;
+}
+.op-button{
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #808000;
+    color: #ffffff;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s;
+    width: 8vw;
+    top: 0;
+
+}
+.account-buttons{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    bottom: 0;
+    position: absolute;
 }

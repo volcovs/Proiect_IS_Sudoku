@@ -2,10 +2,14 @@
 import React, { Component } from "react";
 
 class SudokuCell extends Component {
+
     handleChange = (e) => {
         const inputValue = e.target.value;
-        // You can add validation or formatting logic here if needed
-        this.props.onChange(inputValue);
+        if (e.nativeEvent.inputType === "deleteContentBackward") {
+            this.props.onChange('0');
+        } else {
+            this.props.onChange(inputValue);
+        }
     };
 
     render() {

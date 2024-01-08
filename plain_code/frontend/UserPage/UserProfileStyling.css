@@ -1,0 +1,63 @@
+/* UserProfileStyle.css */
+.user-profile-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 33vw;
+    height: 100vh;
+
+    position: fixed;
+    top: 0;
+    left: 66vw;
+
+
+}
+.user-profile-form {
+
+    width: 300px; /* Adjust the width as needed */
+    margin: 20px auto; /* Center the container */
+    background-color: #ffffff; /* Light grey background */
+    padding: 20px;
+    border: 2px solid #4caf50; /* Intense green border */
+    border-radius: 8px;
+    justify-content: center;
+}
+.user-profile-header {
+    color: #4caf50; /* Intense green text color */
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.user-profile-field {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555; /* Dark grey text color for labels */
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    border: 1px solid #ccc; /* Light grey border for inputs */
+    border-radius: 4px;
+    outline: none;
+}
+
+
+.profile-image {
+    width: 50%; /* Make the image fill the container */
+    height: 50%;
+
+    border: 2px solid #4caf50; /* Intense green border */
+    margin: auto; /* Auto margins to center */
+}
+
+
+
