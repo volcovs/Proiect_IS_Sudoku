@@ -23,11 +23,15 @@ class ButtonsMenu extends Component{
 
        return (
            <div>
+
                <GameButton onClick = {this.handleButtonContinueGame} text = "continue  game"/>
-               <GameButton onClick = {this.handleButtonStartGame} text = "start new game"/>
+
+               {(! this.state.showLevelOptions) &&
+               <GameButton onClick = {this.handleButtonStartGame} text = "start new game"/>}
 
                {this.state.showLevelOptions &&
                <LevelsButtons onSelectLevel={onSelectLevel} onClose={onClose}/>}
+
            </div>
        )
     }

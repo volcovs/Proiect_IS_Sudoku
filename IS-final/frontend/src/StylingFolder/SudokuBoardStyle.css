@@ -7,12 +7,45 @@
 }
 
 .sudoku-column {
+    position: relative; /* Ensure relative positioning for pseudo-elements to work */
+    height: 100%; /* Ensure the column has a non-zero height */
+}
+
+/* Add a line to the right of each column */
+.sudoku-column:nth-child(3):after,
+.sudoku-column:nth-child(6):after {
+    content: ''; /* Ensure content property is present */
+    position: absolute;
+    background-color: #000; /* Set the color of the line */
+    width: 2px; /* Set the width of the line */
+    height: 100%;
+    right: 0;
+    top:0;
 }
 
 .sudoku-cell{
     flex: 1;
     position: relative;
 }
+.sudoku-cell:before,
+.sudoku-cell:after {
+    content: '';
+    position: absolute;
+    background-color: #000; /* Set the color of the bold line */
+}
+.sudoku-cell:nth-child(3):before,
+.sudoku-cell:nth-child(6):before {
+    content: '';
+    position: absolute;
+    background-color: #000; /* Set the color of the line */
+    width: 100%;
+    height: 2px; /* Set the height of the line */
+    bottom: 0;
+}
+
+
+
+
 
 .sudoku-cell input {
     width: 100%;
@@ -26,9 +59,15 @@
 }
 .sudoku-cell input:hover {
     border-color: #6cb2ab;
+    background-color: #d9d9d9;
+
 }
 
 .sudoku-cell input:focus {
-    border-color: #3f8cfb;
+    background-color: #e6e6fa;
     box-shadow: 0 0 5px rgba(63, 10, 251, 0.7);
+}
+
+.almostclicked-cell input{
+    background-color: #b0c4b1; /* Change the background color for cells in the same row or column */
 }

@@ -9,8 +9,18 @@ class SudokuBoard extends Component {
         originalBoard: [],
         fetched: false,
         victoryMsg: false,
+        clickedCell: { row: 5, col: 5 },
+        hint: 0,
+        xhint: 0,
+        yhint: 0,
     };
+    handleCellClick = (row, col) => {
 
+        this.setState({
+            clickedCell: {row:row, col:col},
+        });
+
+    };
     componentDidMount() {
         this.fetchBoardData();
         this.fetchVictoryMsg();
@@ -84,18 +94,51 @@ class SudokuBoard extends Component {
         }
     };
 
+    handleHints = (hint, xhint, yhint) => {
+
+        const { details } = this.state;
+
+        // Create a deep copy of the details array
+        console.log(details);
+        const updatedDetails = JSON.parse(JSON.stringify(details));
+        console.log(updatedDetails);
+        // Update the value of the hinted cell
+        updatedDetails[0][`col${xhint + 1}`] = updatedDetails[0][`col${xhint + 1}`]
+            .split(",")
+            .map((cell, index) => (index === yhint? hint : cell))
+            .join(",");
+
+        this.setState({
+            details: updatedDetails,
+            hint: hint,
+            xhint: xhint,
+            yhint: yhint,
+        });
+    };
+
     renderColumn(col, colIndex) {
+        const {clickedCell} = this.state;
         return (
             <div key={colIndex} className="sudoku-column">
                 {col.split(",").map((cell, rowIndex) => (
-                    <div key={rowIndex} className="sudoku-cell">
+                    <div key={rowIndex}
+                         className={`sudoku-cell ${
+                             clickedCell &&
+                             (rowIndex === clickedCell.row || colIndex === clickedCell.col)
+                                 ? "almostclicked-cell"
+                                 : ""
+                         }`}
+                         onClick={() => this.handleCellClick(rowIndex, colIndex)}
+                    >
                         <SudokuCell
                             value={cell}
                             onChange={(value) =>
                                 this.handleCellChange(rowIndex, colIndex, value)
                             }
+
                         />
                     </div>
+
                 ))}
             </div>
         );
